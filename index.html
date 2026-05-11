@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>原料好好查 - 期末專案成果</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* */
+        :root {
+            --bg-night: #0b1026;
+            --market-yellow: #feca57;
+            --market-red: #ff6b6b;
+            --market-green: #1dd1a1;
+            --hand-border: 2px 5px 4px 5px / 5px 2px 5px 2px;
+        }
+
+        body {
+            background-color: var(--bg-night);
+            color: #fff;
+            font-family: 'Noto Sans TC', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .hand-drawn-border {
+            border: 3px solid #000;
+            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+        }
+
+        .marker-font {
+            font-family: 'ZCOOL KuaiLe', cursive, 'Noto Sans TC';
+        }
+
+        /* */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .shooting-star {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(-45deg, #fff, rgba(0, 0, 255, 0));
+            filter: drop-shadow(0 0 6px #fff);
+            animation: tail 3000ms ease-in-out infinite, shooting 3000ms ease-in-out infinite;
+        }
+
+        @keyframes tail {
+            0% { width: 0; }
+            30% { width: 100px; }
+            100% { width: 0; }
+        }
+
+        @keyframes shooting {
+            0% { transform: translateX(0) rotate(25deg); opacity: 1; }
+            70% { opacity: 1; }
+            100% { transform: translateX(800px) rotate(25deg); opacity: 0; }
+        }
+
+        /* */
+        .receipt {
+            background: #fff;
+            color: #333;
+            padding: 2rem;
+            position: relative;
+            box-shadow: 5px 5px 0px rgba(0,0,0,0.2);
+        }
+        
+        .receipt::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            background: linear-gradient(-45deg, transparent 10px, #fff 10px), linear-gradient(45deg, transparent 10px, #fff 10px);
+            background-size: 20px 20px;
+        }
+
+        .tag-burst {
+            background: var(--market-red);
+            padding: 1rem;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1) rotate(5deg); }
+        }
+
+        .sketch-button {
+            transition: all 0.2s;
+            background: var(--market-yellow);
+            border: 3px solid #000;
+            color: #000;
+            box-shadow: 4px 4px 0px #000;
+        }
+
+        .sketch-button:active {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0px #000;
+        }
+
+        /* */
+        #custom-message {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            color: black;
+            padding: 20px;
+            border: 4px solid black;
+            border-radius: 10px;
+            z-index: 1000;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 背景裝飾 -->
+    <div class="stars-container" id="starField"></div>
+
+    <div class="max-w-4xl mx-auto px-4 py-12">
+        <!-- -->
+        <header class="text-center mb-16 relative">
+            <div class="absolute -top-10 left-1/2 -translate-x-1/2 tag-burst text-white font-bold text-xl marker-font">
+                NEW!
+            </div>
+            <div class="inline-block bg-white text-black p-6 hand-drawn-border transform -rotate-2">
+                <h1 class="text-5xl md:text-6xl marker-font mb-2">🛒 原料好好查</h1>
+                <p class="text-lg font-bold tracking-widest text-gray-600">高中資訊期末專題報告</p>
+            </div>
+        </header>
+
+        <!-- -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+            
+            <!-- 左側手繪超市收據 -->
+            <div class="md:col-span-2 receipt hand-drawn-border">
+                <div class="border-b-2 border-dashed border-gray-400 pb-4 mb-4 text-center">
+                    <h2 class="text-2xl font-bold marker-font">專題說明書 (INVOICE)</h2>
+                    <p class="text-sm">日期：2024.05.20 | 地點：深夜超市</p>
+                </div>
+                
+                <div class="space-y-6 text-lg leading-relaxed">
+                    <div>
+                        <span class="bg-yellow-200 px-2 font-bold"># 核心理念：</span>
+                        <p class="mt-2">我們發現超商食品的成分表總像天書一樣難懂。本專案透過圖像化與資料庫，將複雜的添加物轉化為「易懂的健康分數」，讓每個人都能成為聰明的消費者。</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 text-sm font-mono bg-gray-100 p-4">
+                        <div>[項目 01] 條碼辨識模組</div><div>$ 無價</div>
+                        <div>[項目 02] 食品添加物百科</div><div>$ 知識</div>
+                        <div>[項目 03] 遊戲化UI設計</div><div>$ 趣味</div>
+                    </div>
+
+                    <div>
+                        <span class="bg-green-200 px-2 font-bold"># 遊戲化機制：</span>
+                        <p class="mt-2">查詢過程就像是在進行一場超市大冒險！掃描安全原料可獲得「潔淨點數」，累積點數可解鎖「食安大師」稱號。</p>
+                    </div>
+                </div>
+
+                <div class="mt-8 border-t-2 border-dashed border-gray-400 pt-4 text-right">
+                    <p class="text-3xl marker-font">TOTAL: 滿滿的誠意</p>
+                </div>
+            </div>
+
+            <!-- -->
+            <div class="flex flex-col gap-6">
+                <div class="bg-white p-6 hand-drawn-border transform rotate-3">
+                    <p class="text-black font-bold mb-4 text-center">💾 準備好開始體驗了嗎？</p>
+                    <button id="runProject" class="w-full py-4 sketch-button font-bold text-xl marker-font flex items-center justify-center gap-2">
+                        <span>啟動專案執行檔</span>
+                    </button>
+                    <p class="text-xs text-gray-500 mt-2 text-center">* 需要安裝 Java 執行環境</p>
+            <!-- 右側操作區 -->
+            <div class="flex flex-col gap-6">
+                <div class="bg-white p-6 hand-drawn-border transform rotate-3">
+                    <p class="text-black font-bold mb-4 text-center">💾 準備好開始體驗了嗎？</p>
+                    <button id="runProject" class="w-full py-4 sketch-button font-bold text-xl marker-font flex items-center justify-center gap-2">
+                        <span>啟動專案執行檔</span>
+                    </button>
+                    <p class="text-xs text-gray-500 mt-2 text-center">* 需要安裝 Java 執行環境</p>
+                </div>
+
+                <div class="text-center pt-8">
+                    <img src="https://placehold.co/150x150/ffffff/000000?text=Supermarket+Cart" alt="手繪購物車" class="mx-auto opacity-50 grayscale hover:grayscale-0 transition cursor-pointer" onerror="this.src='https://placehold.co/150x150?text=🛒'">
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-24 text-center opacity-60 text-sm">
+            <p>本網頁採用手繪與遊戲化風格設計 - © 2024 原料好好查小組</p>
+        </footer>
+    </div>
+
+    <!-- 自訂訊息彈窗 -->
+    <div id="custom-message">
+        <p id="msg-text" class="text-lg font-bold mb-4"></p>
+        <button onclick="closeMsg()" class="px-6 py-2 bg-black text-white rounded-lg">確定</button>
+    </div>
+
+    <script>
+        
+        // 生成流星
+        function createShootingStar() {
+            const container = document.getElementById('starField');
+            const star = document.createElement('div');
+            star.className = 'shooting-star';
+            
+            // 隨機初始位置與延遲
+            const top = Math.random() * 60; // 只在畫面上半部
+            const left = Math.random() * 100;
+            const delay = Math.random() * 2;
+            const duration = 2 + Math.random() * 3;
+
+            star.style.top = `${top}%`;
+            star.style.left = `${left}%`;
+            star.style.animationDelay = `${delay}s`;
+            star.style.animationDuration = `${duration}s`;
+
+            container.appendChild(star);
+
+            // 動畫結束後移除
+            setTimeout(() => {
+                star.remove();
+            }, (delay + duration) * 1000);
+        }
+
+        // 定期產生流星
+        setInterval(createShootingStar, 1500);
+
+        // 初始化一些流星
+        for(let i=0; i<5; i++) createShootingStar();
+
+        // 修正後的變數定義：確保抓取到 HTML 中的按鈕 ID
+        const runBtn = document.getElementById('runProject');
+        const modal = document.getElementById('custom-message');
+        const msgText = document.getElementById('msg-text');
+
+        if (runBtn) {
+            runBtn.addEventListener('click', () => {
+                msgText.innerHTML = "🛒 叮咚！正在載入專案執行檔...<br><span class='text-sm text-gray-500'>(模擬環境中，請至 GitHub 專案頁面下載實體 .exe 檔案)</span>";
+                modal.style.display = 'block';
+            });
+        }
+
+        function closeMsg() {
+            modal.style.display = 'none';
+        }
+
+        // 隨機增加一點手繪抖動感
+        window.addEventListener('load', () => {
+            const elements = document.querySelectorAll('.hand-drawn-border');
+            elements.forEach(el => {
+                const r1 = Math.floor(Math.random() * 10) + 250;
+                const r2 = Math.floor(Math.random() * 10) + 15;
+                const r3 = Math.floor(Math.random() * 10) + 220;
+                el.style.borderRadius = `${r1}px ${r2}px ${r3}px ${r2}px/${r2}px ${r3}px ${r2}px ${r1}px`;
+            });
+        });
+
+    </script>
+</body>
+</html>
