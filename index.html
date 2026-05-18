@@ -3,52 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>原料好好查 - 期末專案成果</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+    <title>高中期末專題 - 原料好好查</title>
     <style>
-        /* */
+        /* --- 全域手繪感設定 --- */
         :root {
-            --bg-night: #0b1026;
-            --market-yellow: #feca57;
-            --market-red: #ff6b6b;
-            --market-green: #1dd1a1;
-            --hand-border: 2px 5px 4px 5px / 5px 2px 5px 2px;
+            --supermarket-red: #ff4757;
+            --supermarket-yellow: #ffa502;
+            --night-sky: #0c1428;
+            --hand-drawn-stroke: #2c3e50;
         }
 
-        body {
-            background-color: var(--bg-night);
-            color: #fff;
-            font-family: 'Noto Sans TC', sans-serif;
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background: var(--night-sky);
+            color: #333;
             overflow-x: hidden;
-            min-height: 100vh;
         }
 
-        .hand-drawn-border {
-            border: 3px solid #000;
-            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
-        }
-
-        .marker-font {
-            font-family: 'ZCOOL KuaiLe', cursive, 'Noto Sans TC';
-        }
-
-        /* */
-        .stars-container {
+        /* --- 夜晚流星背景 --- */
+        .night {
             position: fixed;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
             z-index: -1;
-            overflow: hidden;
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
         }
 
-        .shooting-star {
+        .shooting_star {
             position: absolute;
+            left: 50%;
+            top: 50%;
             height: 2px;
-            background: linear-gradient(-45deg, #fff, rgba(0, 0, 255, 0));
-            filter: drop-shadow(0 0 6px #fff);
+            background: linear-gradient(-45deg, #5f91ff, rgba(0, 0, 255, 0));
+            border-radius: 999px;
+            filter: drop-shadow(0 0 6px #699bff);
             animation: tail 3000ms ease-in-out infinite, shooting 3000ms ease-in-out infinite;
         }
 
@@ -59,218 +49,206 @@
         }
 
         @keyframes shooting {
-            0% { transform: translateX(0) rotate(25deg); opacity: 1; }
-            70% { opacity: 1; }
-            100% { transform: translateX(800px) rotate(25deg); opacity: 0; }
+            0% { transform: translateX(0) rotate(25deg); }
+            100% { transform: translateX(300px) rotate(25deg); }
         }
 
-        /* */
-        .receipt {
-            background: #fff;
-            color: #333;
-            padding: 2rem;
-            position: relative;
-            box-shadow: 5px 5px 0px rgba(0,0,0,0.2);
-        }
-        
-        .receipt::after {
-            content: '';
-            position: absolute;
-            bottom: -15px;
-            left: 0;
-            width: 100%;
-            height: 20px;
-            background: linear-gradient(-45deg, transparent 10px, #fff 10px), linear-gradient(45deg, transparent 10px, #fff 10px);
-            background-size: 20px 20px;
-        }
-
-        .tag-burst {
-            background: var(--market-red);
-            padding: 1rem;
-            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1) rotate(5deg); }
-        }
-
-        .sketch-button {
-            transition: all 0.2s;
-            background: var(--market-yellow);
-            border: 3px solid #000;
-            color: #000;
-            box-shadow: 4px 4px 0px #000;
-        }
-
-        .sketch-button:active {
-            transform: translate(2px, 2px);
-            box-shadow: 1px 1px 0px #000;
-        }
-
-        /* */
-        #custom-message {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            color: black;
+        /* --- 主內容區 --- */
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
             padding: 20px;
-            border: 4px solid black;
-            border-radius: 10px;
-            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        /* 手繪風特價標籤標題 */
+        .header {
             text-align: center;
+            background: var(--supermarket-red);
+            color: white;
+            padding: 30px 20px;
+            /* 運用不規則邊框做出手繪感 */
+            border: 4px solid var(--hand-drawn-stroke);
+            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+            box-shadow: 8px 8px 0px var(--supermarket-yellow);
+            transform: rotate(-1.5deg);
+            margin-bottom: 50px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.8rem;
+            text-shadow: 3px 3px 0px var(--hand-drawn-stroke);
+        }
+
+        /* 手繪風超市收據介紹區 */
+        .content-box {
+            background: #fffdf0;
+            padding: 35px;
+            border: 4px solid var(--hand-drawn-stroke);
+            border-radius: 20px 10px 30px 12px/10px 30px 12px 20px;
+            box-shadow: 5px 5px 0px rgba(0,0,0,0.15);
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        /* 標籤小裝飾 */
+        .content-box::before {
+            content: '推薦首選 ★';
+            position: absolute;
+            top: -15px;
+            right: 15px;
+            background: var(--supermarket-yellow);
+            padding: 5px 15px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            border: 3px solid var(--hand-drawn-stroke);
+            border-radius: 5px 12px 4px 10px;
+            transform: rotate(5deg);
+        }
+
+        h2 {
+            color: var(--supermarket-red);
+            font-size: 1.8rem;
+            margin-top: 0;
+            border-bottom: 3px dashed var(--hand-drawn-stroke);
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #2c3e50;
+            margin-top: 25px;
+        }
+
+        p, li {
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+            list-style-type: '🛒 ';
+        }
+
+        /* 遊戲化下載按鈕 */
+        .download-btn {
+            display: block;
+            width: fit-content;
+            margin: 40px auto;
+            padding: 20px 45px;
+            font-size: 1.6rem;
+            background: #2ecc71;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border: 4px solid var(--hand-drawn-stroke);
+            border-radius: 50px 15px 45px 20px/15px 45px 20px 50px;
+            box-shadow: 0 10px 0 var(--hand-drawn-stroke);
+            transition: 0.15s;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .download-btn:hover {
+            transform: translateY(4px);
+            box-shadow: 0 6px 0 var(--hand-drawn-stroke);
+            background: #27ae60;
+        }
+
+        .download-btn:active {
+            transform: translateY(10px);
+            box-shadow: 0 0px 0 var(--hand-drawn-stroke);
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 0.9rem;
+            color: white;
+            opacity: 0.6;
+            margin-top: 80px;
         }
     </style>
 </head>
 <body>
 
-    <!-- 背景裝飾 -->
-    <div class="stars-container" id="starField"></div>
+    <!-- 背景流星群 -->
+    <div class="night"></div>
 
-    <div class="max-w-4xl mx-auto px-4 py-12">
-        <!-- -->
-        <header class="text-center mb-16 relative">
-            <div class="absolute -top-10 left-1/2 -translate-x-1/2 tag-burst text-white font-bold text-xl marker-font">
-                NEW!
-            </div>
-            <div class="inline-block bg-white text-black p-6 hand-drawn-border transform -rotate-2">
-                <h1 class="text-5xl md:text-6xl marker-font mb-2">🛒 原料好好查</h1>
-                <p class="text-lg font-bold tracking-widest text-gray-600">高中資訊期末專題報告</p>
-            </div>
+    <div class="container">
+        <!-- 標題區 -->
+        <header class="header">
+            <h1>🛒 原料好好查</h1>
+            <p style="margin: 5px 0 0 0; font-weight: bold; letter-spacing: 1px;">高中期末專題成果發表</p>
         </header>
 
-        <!-- -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+        <!-- 主題介紹區（已移除小組成員方塊） -->
+        <section class="content-box">
+            <h2>💡 專案核心概念</h2>
+            <p>
+                在現代生活中，我們每天吃進一堆加工食品，但包裝背後密密麻麻的化學成分標示卻像火星文一樣難懂。「原料好好查」是一個打破資訊門檻的趣味工具，將枯燥乏味的成分表，變身成直觀的「超市冒險闖關」體驗！
+            </p>
             
-            <!-- 左側手繪超市收據 -->
-            <div class="md:col-span-2 receipt hand-drawn-border">
-                <div class="border-b-2 border-dashed border-gray-400 pb-4 mb-4 text-center">
-                    <h2 class="text-2xl font-bold marker-font">專題說明書 (INVOICE)</h2>
-                    <p class="text-sm">日期：2024.05.20 | 地點：深夜超市</p>
-                </div>
-                
-                <div class="space-y-6 text-lg leading-relaxed">
-                    <div>
-                        <span class="bg-yellow-200 px-2 font-bold"># 核心理念：</span>
-                        <p class="mt-2">我們發現超商食品的成分表總像天書一樣難懂。本專案透過圖像化與資料庫，將複雜的添加物轉化為「易懂的健康分數」，讓每個人都能成為聰明的消費者。</p>
-                    </div>
+            <h3>🔍 專案三大亮點</h3>
+            <ul>
+                <li><strong>食安透明化：</strong> 串接食品添加物資料庫，一秒解密那些看不懂的化學名詞。</li>
+                <li><strong>紅黃綠燈視覺化：</strong> 用遊戲化的燈號區分成分安全級別，大人小孩都能秒懂。</li>
+                <li><strong>生活實用性：</strong> 帶上它，就像帶了個食安小助手，逛街購物不再踩雷。</li>
+            </ul>
 
-                    <div class="grid grid-cols-2 gap-4 text-sm font-mono bg-gray-100 p-4">
-                        <div>[項目 01] 條碼辨識模組</div><div>$ 無價</div>
-                        <div>[項目 02] 食品添加物百科</div><div>$ 知識</div>
-                        <div>[項目 03] 遊戲化UI設計</div><div>$ 趣味</div>
-                    </div>
+            <h3>🎮 遊戲化元素</h3>
+            <p>
+                我們把查詢流程設計成像在超市刷條碼！每分析一個安全的成分，就能累積「健康經驗值」；若是整包食品都是純天然成分，還能解鎖「純淨終結者」等搞怪稱號，讓看成分表變成一場收集成就的挑戰。
+            </p>
+        </section>
 
-                    <div>
-                        <span class="bg-green-200 px-2 font-bold"># 遊戲化機制：</span>
-                        <p class="mt-2">查詢過程就像是在進行一場超市大冒險！掃描安全原料可獲得「潔淨點數」，累積點數可解鎖「食安大師」稱號。</p>
-                    </div>
-                </div>
+        <!-- 專案執行檔按鈕 -->
+        <a href="#" class="download-btn" id="runBtn">🚀 啟動專案執行檔 (.exe)</a>
 
-                <div class="mt-8 border-t-2 border-dashed border-gray-400 pt-4 text-right">
-                    <p class="text-3xl marker-font">TOTAL: 滿滿的誠意</p>
-                </div>
-            </div>
-
-            <!-- -->
-            <div class="flex flex-col gap-6">
-                <div class="bg-white p-6 hand-drawn-border transform rotate-3">
-                    <p class="text-black font-bold mb-4 text-center">💾 準備好開始體驗了嗎？</p>
-                    <button id="runProject" class="w-full py-4 sketch-button font-bold text-xl marker-font flex items-center justify-center gap-2">
-                        <span>啟動專案執行檔</span>
-                    </button>
-                    <p class="text-xs text-gray-500 mt-2 text-center">* 需要安裝 Java 執行環境</p>
-            <!-- 右側操作區 -->
-            <div class="flex flex-col gap-6">
-                <div class="bg-white p-6 hand-drawn-border transform rotate-3">
-                    <p class="text-black font-bold mb-4 text-center">💾 準備好開始體驗了嗎？</p>
-                    <button id="runProject" class="w-full py-4 sketch-button font-bold text-xl marker-font flex items-center justify-center gap-2">
-                        <span>啟動專案執行檔</span>
-                    </button>
-                    <p class="text-xs text-gray-500 mt-2 text-center">* 需要安裝 Java 執行環境</p>
-                </div>
-
-                <div class="text-center pt-8">
-                    <img src="https://placehold.co/150x150/ffffff/000000?text=Supermarket+Cart" alt="手繪購物車" class="mx-auto opacity-50 grayscale hover:grayscale-0 transition cursor-pointer" onerror="this.src='https://placehold.co/150x150?text=🛒'">
-                </div>
-            </div>
-        </div>
-
-        <footer class="mt-24 text-center opacity-60 text-sm">
-            <p>本網頁採用手繪與遊戲化風格設計 - © 2024 原料好好查小組</p>
+        <footer class="footer">
+            <p>&copy; 高中專題製作小組成果發表展</p>
         </footer>
     </div>
 
-    <!-- 自訂訊息彈窗 -->
-    <div id="custom-message">
-        <p id="msg-text" class="text-lg font-bold mb-4"></p>
-        <button onclick="closeMsg()" class="px-6 py-2 bg-black text-white rounded-lg">確定</button>
-    </div>
-
+    <!-- 核心控制腳本 -->
     <script>
-        
-        // 生成流星
-        function createShootingStar() {
-            const container = document.getElementById('starField');
-            const star = document.createElement('div');
-            star.className = 'shooting-star';
-            
-            // 隨機初始位置與延遲
-            const top = Math.random() * 60; // 只在畫面上半部
-            const left = Math.random() * 100;
-            const delay = Math.random() * 2;
-            const duration = 2 + Math.random() * 3;
-
-            star.style.top = `${top}%`;
-            star.style.left = `${left}%`;
-            star.style.animationDelay = `${delay}s`;
-            star.style.animationDuration = `${duration}s`;
-
-            container.appendChild(star);
-
-            // 動畫結束後移除
-            setTimeout(() => {
-                star.remove();
-            }, (delay + duration) * 1000);
-        }
-
-        // 定期產生流星
-        setInterval(createShootingStar, 1500);
-
-        // 初始化一些流星
-        for(let i=0; i<5; i++) createShootingStar();
-
-        // 修正後的變數定義：確保抓取到 HTML 中的按鈕 ID
-        const runBtn = document.getElementById('runProject');
-        const modal = document.getElementById('custom-message');
-        const msgText = document.getElementById('msg-text');
+        // 🎯 點擊按鈕觸發下載 111.exe
+        const runBtn = document.getElementById('runBtn');
 
         if (runBtn) {
-            runBtn.addEventListener('click', () => {
-                msgText.innerHTML = "🛒 叮咚！正在載入專案執行檔...<br><span class='text-sm text-gray-500'>(模擬環境中，請至 GitHub 專案頁面下載實體 .exe 檔案)</span>";
-                modal.style.display = 'block';
+            runBtn.addEventListener('click', function(e) {
+                e.preventDefault(); // 阻止網頁預設跳轉行為
+                
+                // 跳出超市風格提示
+                alert('叮咚！收銀機掃描成功！\n系統正在為您下載專案執行檔 (111.exe)...');
+                
+                // 執行下載
+                window.location.href = "111.exe"; 
             });
         }
 
-        function closeMsg() {
-            modal.style.display = 'none';
+        // --- 自動生成流星動畫 ---
+        function createStar() {
+            const night = document.querySelector('.night');
+            if (!night) return;
+            
+            const star = document.createElement('div');
+            star.className = 'shooting_star';
+            star.style.top = Math.random() * 40 + '%'; // 只出現在上半部夜空
+            star.style.left = Math.random() * 90 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            
+            night.appendChild(star);
+            
+            // 定時刪除舊流星，避免記憶體吃滿
+            setTimeout(() => { star.remove(); }, 4000);
         }
-
-        // 隨機增加一點手繪抖動感
-        window.addEventListener('load', () => {
-            const elements = document.querySelectorAll('.hand-drawn-border');
-            elements.forEach(el => {
-                const r1 = Math.floor(Math.random() * 10) + 250;
-                const r2 = Math.floor(Math.random() * 10) + 15;
-                const r3 = Math.floor(Math.random() * 10) + 220;
-                el.style.borderRadius = `${r1}px ${r2}px ${r3}px ${r2}px/${r2}px ${r3}px ${r2}px ${r1}px`;
-            });
-        });
-
+        
+        // 每 1.5 秒產生一顆新流星
+        setInterval(createStar, 1500);
     </script>
 </body>
 </html>
