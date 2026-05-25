@@ -182,11 +182,14 @@
     </div>
 
     <script>
-        // 按鈕點擊小互動
-        document.getElementById('runBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            alert('叮咚！掃描成功！專案執行檔正在模擬下載中...\n(專題實作成果請連結至你的 GitHub 或雲端路徑)');
-        });
+       <script>
+    document.getElementById('runBtn').addEventListener('click', function(e) {
+        e.preventDefault(); // 這一行確保點擊後不會跳轉頁面
+        
+        // 觸發下載你的檔案
+        window.location.href = "111.exe"; 
+    });
+</script>
 
         // 動態增加流星效果
         function createStar() {
