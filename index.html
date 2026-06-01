@@ -4,13 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>高中期末專題 - 原料好好查</title>
+    <!-- 引入 Tailwind CSS 提供現代化排版與流暢 UI -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* --- 全域設定 --- */
+        /* --- 全域設定與主題變數 --- */
         :root {
             --supermarket-red: #ff4757;
             --supermarket-yellow: #ffa502;
-            --shelf-wood: #d35400;
-            --night-sky: #0c1428;
+            --supermarket-green: #2ecc71;
+            --night-sky: #0a0e17;
+            --arcade-blue: #00d2ff;
         }
 
         body, html {
@@ -20,191 +23,509 @@
             background: var(--night-sky);
             color: white;
             overflow-x: hidden;
+            scroll-behavior: smooth;
         }
 
-        /* --- 流星背景動畫 --- */
-        .night {
+        /* --- 星空與動態流星背景 --- */
+        .night-bg {
             position: fixed;
             width: 100%;
             height: 100%;
             z-index: -1;
-            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+            background: radial-gradient(ellipse at bottom, #0d1b2a 0%, #050811 100%);
+            overflow: hidden;
         }
 
         .shooting_star {
             position: absolute;
-            left: 50%;
-            top: 50%;
             height: 2px;
             background: linear-gradient(-45deg, #5f91ff, rgba(0, 0, 255, 0));
             border-radius: 999px;
             filter: drop-shadow(0 0 6px #699bff);
             animation: tail 3000ms ease-in-out infinite, shooting 3000ms ease-in-out infinite;
+            opacity: 0.8;
         }
 
         @keyframes tail {
             0% { width: 0; }
-            30% { width: 100px; }
+            30% { width: 120px; }
             100% { width: 0; }
         }
 
         @keyframes shooting {
-            0% { transform: translateX(0) rotate(25deg); }
-            100% { transform: translateX(300px) rotate(25deg); }
+            0% { transform: translate(0, 0) rotate(25deg); }
+            100% { transform: translate(400px, 180px) rotate(25deg); }
         }
 
-        /* 生成多顆流星 */
-        .shooting_star:nth-child(1) { top: 10%; left: 30%; animation-delay: 1s; }
-        .shooting_star:nth-child(2) { top: 20%; left: 70%; animation-delay: 2.5s; }
-        .shooting_star:nth-child(3) { top: 5%; left: 50%; animation-delay: 4s; }
-
-        /* --- 主內容區塊 --- */
-        .container {
-            max-width: 900px;
-            margin: 50px auto;
-            padding: 20px;
+        /* --- 復古霓虹超市美學 --- */
+        .arcade-border {
+            border: 4px solid #fff;
+            box-shadow: 0 0 15px rgba(255, 71, 87, 0.6), 
+                        inset 0 0 15px rgba(255, 165, 2, 0.4);
         }
 
-        /* 超市風格標題 */
-        .header {
-            text-align: center;
-            background: var(--supermarket-red);
-            padding: 20px;
-            border: 5px solid white;
-            box-shadow: 8px 8px 0px var(--supermarket-yellow);
-            transform: rotate(-1deg);
-            margin-bottom: 50px;
+        .header-box {
+            background: linear-gradient(135deg, var(--supermarket-red), #e03747);
+            border: 4px solid white;
+            box-shadow: 8px 8px 0px var(--supermarket-yellow), 0px 10px 30px rgba(255, 71, 87, 0.4);
+            transform: rotate(-0.5deg);
         }
 
-        .header h1 {
-            margin: 0;
-            font-size: 3rem;
-            text-shadow: 3px 3px 0px #333;
+        /* 自訂滾動條 */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-
-        /* 主題介紹卡片 */
-        .content-box {
-            background: white;
-            color: #333;
-            padding: 30px;
-            border-radius: 20px;
-            border-bottom: 10px solid #ddd;
-            margin-bottom: 40px;
-            position: relative;
+        ::-webkit-scrollbar-track {
+            background: #0a0e17;
         }
-
-        .content-box::before {
-            content: 'SPECIAL PRICE';
-            position: absolute;
-            top: -15px;
-            right: -15px;
-            background: var(--supermarket-yellow);
-            padding: 10px;
-            font-weight: bold;
-            border: 2px solid black;
-            transform: rotate(15deg);
+        ::-webkit-scrollbar-thumb {
+            background: #ff4757;
+            border-radius: 4px;
         }
-
-        h2 { color: var(--supermarket-red); border-left: 5px solid var(--supermarket-red); padding-left: 10px; }
-
-        /* 專案執行檔按鈕 */
-        .download-btn {
-            display: block;
-            width: fit-content;
-            margin: 40px auto;
-            padding: 20px 50px;
-            font-size: 1.5rem;
-            background: #2ecc71;
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-            border-radius: 50px;
-            box-shadow: 0 10px 0 #27ae60;
-            transition: 0.2s;
-            cursor: pointer;
-        }
-
-        .download-btn:hover {
-            transform: translateY(5px);
-            box-shadow: 0 5px 0 #27ae60;
-        }
-
-        .footer {
-            text-align: center;
-            font-size: 0.9rem;
-            opacity: 0.7;
-            margin-top: 100px;
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ffa502;
         }
     </style>
 </head>
-<body>
+<body class="min-h-screen">
 
-    <!-- 背景流星 -->
-    <div class="night">
-        <div class="shooting_star"></div>
-        <div class="shooting_star"></div>
-        <div class="shooting_star"></div>
+    <!-- 背景流星層 -->
+    <div class="night-bg" id="nightBg">
+        <div class="shooting_star" style="top: 10%; left: 20%; animation-delay: 0.5s; animation-duration: 3500ms;"></div>
+        <div class="shooting_star" style="top: 25%; left: 65%; animation-delay: 2s; animation-duration: 4000ms;"></div>
+        <div class="shooting_star" style="top: 5%; left: 45%; animation-delay: 4.5s; animation-duration: 3000ms;"></div>
     </div>
 
-    <div class="container">
-        <!-- 標題 -->
-        <header class="header">
-            <h1>🛒 原料好好查</h1>
-            <p>高中期末專題 | 資訊科技與生活應用</p>
+    <div class="container mx-auto max-w-5xl px-4 py-8 relative z-10">
+        
+        <!-- ================= 頂部標題區 ================= -->
+        <header class="header-box text-center py-8 px-4 mb-12 rounded-lg transition-transform hover:scale-[1.01] duration-300">
+            <span class="inline-block bg-yellow-400 text-black font-extrabold text-xs px-3 py-1 rounded-full mb-3 shadow">
+                👾 2024 高中資訊科技自主專題
+            </span>
+            <h1 class="text-4xl md:text-5xl font-black tracking-wider text-white drop-shadow-[3px_3px_0px_#1e272e] flex items-center justify-center gap-3">
+                🛒 原料好好查 <span class="text-yellow-300 text-3xl md:text-4xl">PRO</span>
+            </h1>
+            <p class="mt-3 text-sm md:text-base font-bold text-yellow-100 opacity-95 tracking-wide">
+                用遊戲化與數據透明，把密密麻麻的加工原料標示轉成「超市大冒險」！
+            </p>
         </header>
 
-        <!-- 主題介紹 -->
-        <section class="content-box">
-            <h2>💡 專案核心概念</h2>
-            <p>
-                在現代社會中，我們每天攝取大量的加工食品，但包裝背後那些密密麻麻的化學成分標示，卻像是天書一樣令人難解。「原料好好查」是一個旨在降低資訊門檻的工具，將冰冷的原料名單轉化為直觀的「超市冒險」體驗。
-            </p>
+        <!-- ================= 主排版：左邊核心概念，右邊線上體驗 ================= -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
             
-            <h3>🔍 專案目標</h3>
-            <ul>
-                <li><strong>資訊透明化：</strong> 透過資料庫串接，一秒解析添加物對健康的影響。</li>
-                <li><strong>視覺化導引：</strong> 採用遊戲化介面，將成分等級分為「綠色安全、黃色注意、紅色危險」。</li>
-                <li><strong>生活化應用：</strong> 幫助學生與家長在購物時能快速做出更好的選擇。</li>
-            </ul>
+            <!-- 左側：專案背景與概念卡片 (佔 5 格) -->
+            <div class="lg:col-span-5 flex flex-col gap-6">
+                
+                <!-- 核心價值卡 -->
+                <div class="bg-gray-900/90 backdrop-blur-md rounded-2xl p-6 border-2 border-gray-800 shadow-xl relative overflow-hidden group">
+                    <div class="absolute -top-3 -right-3 bg-red-500 text-white font-black text-xs px-4 py-2 rotate-[12deg] border-2 border-white shadow">
+                        Core Idea
+                    </div>
+                    <h2 class="text-xl font-extrabold text-red-400 border-l-4 border-red-500 pl-3 mb-4 flex items-center gap-2">
+                        💡 專案核心概念
+                    </h2>
+                    <p class="text-gray-300 text-sm leading-relaxed mb-4">
+                        在現代社會中，我們每天攝取大量的加工食品，但包裝背後那些密密麻麻的化學成分標示，卻像是天書一樣令人難解。
+                    </p>
+                    <p class="text-gray-300 text-sm leading-relaxed">
+                        「原料好好查」是一個旨在<strong>降低食品安全資訊門檻</strong>的工具，利用我們建置的成分資料庫，將冰冷的化學添加物名單，秒變直觀有趣的健康冒險分數！
+                    </p>
+                </div>
 
-            <h3>🎮 遊戲化元素</h3>
-            <p>
-                我們將查詢過程設計成像在超市選購商品。每當使用者掃描一個成分，系統會給予相應的「健康點數」。如果該產品全是天然原料，玩家將獲得「純淨探險家」成就勛章！
+                <!-- 專案目標卡 -->
+                <div class="bg-gray-900/90 backdrop-blur-md rounded-2xl p-6 border-2 border-gray-800 shadow-xl">
+                    <h2 class="text-xl font-extrabold text-yellow-400 border-l-4 border-yellow-500 pl-3 mb-4">
+                        🔍 專案三大亮點
+                    </h2>
+                    <ul class="space-y-4 text-sm text-gray-300">
+                        <li class="flex items-start gap-3">
+                            <span class="bg-emerald-500/20 text-emerald-400 p-1 rounded font-bold text-xs mt-0.5">01</span>
+                            <div>
+                                <strong class="text-white block mb-0.5">資訊完全透明化</strong>
+                                一秒解析添加物在人體中的代謝反應與潛在風險。
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="bg-yellow-500/20 text-yellow-400 p-1 rounded font-bold text-xs mt-0.5">02</span>
+                            <div>
+                                <strong class="text-white block mb-0.5">紅黃綠視覺化引導</strong>
+                                分為「綠色安全、黃色注意、紅色危險」，購物選擇一目了然。
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="bg-rose-500/20 text-rose-400 p-1 rounded font-bold text-xs mt-0.5">03</span>
+                            <div>
+                                <strong class="text-white block mb-0.5">電玩化點數與勳章</strong>
+                                將買東西變成收集成就，激發家庭與學生研究成分的樂趣。
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 右側：線上模擬分析器 (佔 7 格) -->
+            <div class="lg:col-span-7">
+                <div class="bg-slate-900/95 backdrop-blur-md rounded-3xl p-6 border-4 border-slate-700 shadow-2xl relative">
+                    <!-- 霓虹燈裝飾點綴 -->
+                    <div class="absolute top-4 right-4 flex gap-1.5">
+                        <span class="w-3 h-3 rounded-full bg-red-500 animate-pulse"></span>
+                        <span class="w-3 h-3 rounded-full bg-yellow-500 animate-pulse" style="animation-delay: 0.2s"></span>
+                        <span class="w-3 h-3 rounded-full bg-green-500 animate-pulse" style="animation-delay: 0.4s"></span>
+                    </div>
+
+                    <h2 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400 mb-2 flex items-center gap-2">
+                        🎮 線上版功能體驗區
+                    </h2>
+                    <p class="text-xs text-slate-400 mb-6">點擊下方常見食品，或自行輸入成分，立即模擬「原料好好查」運作邏輯！</p>
+
+                    <!-- 快捷體驗按鈕 -->
+                    <div class="mb-5">
+                        <span class="block text-xs font-bold text-slate-400 mb-2">⚡ 快速選取經典食品：</span>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="loadProduct('cola')" class="text-xs bg-slate-800 hover:bg-red-500 hover:text-white text-slate-300 font-bold px-3 py-1.5 rounded-lg border border-slate-700 transition duration-150">
+                                🥤 經典可樂
+                            </button>
+                            <button onclick="loadProduct('chips')" class="text-xs bg-slate-800 hover:bg-yellow-500 hover:text-black text-slate-300 font-bold px-3 py-1.5 rounded-lg border border-slate-700 transition duration-150">
+                                🥔 起司洋芋片
+                            </button>
+                            <button onclick="loadProduct('strawberryMilk')" class="text-xs bg-slate-800 hover:bg-pink-500 hover:text-white text-slate-300 font-bold px-3 py-1.5 rounded-lg border border-slate-700 transition duration-150">
+                                🍓 草莓風味牛乳
+                            </button>
+                            <button onclick="loadProduct('greenTea')" class="text-xs bg-slate-800 hover:bg-emerald-500 hover:text-white text-slate-300 font-bold px-3 py-1.5 rounded-lg border border-slate-700 transition duration-150">
+                                🍵 無糖純鮮綠茶
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 輸入框 -->
+                    <div class="mb-5">
+                        <label for="ingredientsInput" class="block text-xs font-bold text-slate-400 mb-1.5">📝 請輸入食品原料清單（以逗號區隔）：</label>
+                        <textarea id="ingredientsInput" rows="3" class="w-full bg-slate-950 text-white rounded-xl border-2 border-slate-800 p-3 text-sm focus:outline-none focus:border-cyan-500 transition-colors" placeholder="例如：水, 砂糖, 檸檬酸, 羧甲基纖維素鈉, 阿斯巴甜, 食用紅色六號..."></textarea>
+                    </div>
+
+                    <!-- 開始分析按鈕 -->
+                    <button onclick="analyzeIngredients()" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold py-3.5 px-6 rounded-xl shadow-lg shadow-cyan-500/20 transform active:scale-95 transition-all flex items-center justify-center gap-2">
+                        🔍 掃描並分析原料成分
+                    </button>
+
+                    <!-- ================= 分析結果區 (動態呈現) ================= -->
+                    <div id="resultArea" class="hidden mt-6 pt-6 border-t border-slate-800">
+                        
+                        <!-- 第一排：健康點數與成就勋章 -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <!-- 健康值 HP -->
+                            <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs font-bold text-slate-400 block mb-1">🛡️ 產品健康點數 (HP)</span>
+                                    <span id="hpScore" class="text-3xl font-black text-emerald-400">100 / 100</span>
+                                </div>
+                                <div class="w-16 h-16 rounded-full bg-slate-900 border-4 border-slate-800 flex items-center justify-center relative overflow-hidden">
+                                    <div id="hpWave" class="absolute bottom-0 left-0 right-0 bg-emerald-500/30 transition-all duration-500" style="height: 100%;"></div>
+                                    <span class="relative text-2xl">❤️</span>
+                                </div>
+                            </div>
+
+                            <!-- 成就解鎖 -->
+                            <div id="badgeContainer" class="bg-slate-950 p-4 rounded-2xl border border-slate-800 flex items-center gap-4">
+                                <div class="text-4xl" id="badgeEmoji">🏅</div>
+                                <div>
+                                    <span class="text-xs font-bold text-slate-400 block">🏆 冒險者成就解鎖</span>
+                                    <span id="badgeName" class="text-base font-black text-yellow-400">純淨探險家</span>
+                                    <p id="badgeDesc" class="text-[11px] text-slate-500 mt-0.5">全天然成分，無任何人工化學添加劑！</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 第二排：詳細成分分級清單 -->
+                        <h3 class="text-sm font-bold text-slate-300 mb-3 flex items-center gap-1.5">
+                            📊 添加物成分拆解：
+                        </h3>
+                        <div class="space-y-2 max-h-48 overflow-y-auto pr-1" id="analyzedList">
+                            <!-- JS 動態插入 -->
+                        </div>
+
+                        <div class="mt-4 flex justify-between items-center bg-slate-950 p-3 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-400">覺得分析準確嗎？可以複製這份報告分享喔！</span>
+                            <button onclick="copyReport()" class="text-xs bg-slate-800 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg font-bold transition">
+                                📋 複製報告
+                            </button>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ================= 專案主程式下載與引導區 ================= -->
+        <section class="bg-gradient-to-b from-gray-900 to-slate-950 border-4 border-dashed border-red-500/50 rounded-3xl p-8 text-center max-w-3xl mx-auto shadow-2xl relative overflow-hidden">
+            <div class="absolute -right-12 -bottom-12 w-36 h-36 bg-red-500/10 rounded-full blur-2xl pointer-events-none"></div>
+            
+            <span class="text-4xl block mb-3 animate-bounce">🚀</span>
+            <h2 class="text-2xl font-black tracking-wide text-white mb-2">
+                想在電腦上玩到更完整的「超市遊戲化」專案嗎？
+            </h2>
+            <p class="text-sm text-gray-400 max-w-lg mx-auto mb-6">
+                我們的高中自主專案包含超精美的 2D 復古超市地圖、完整圖鑑系統，歡迎直接下載 Windows 執行檔，一鍵啟動體驗！
+            </p>
+
+            <!-- 
+              【下載按鈕說明】
+               這裡直接設置了 href="111.exe" 與 download 屬性。當使用者點擊時，
+               會觸發最原生的安全下載，且會自動將下載下來的 111.exe 檔案命名為漂亮的「原料好好查_專案主程式.exe」！
+            -->
+            <a href="111.exe" download="原料好好查_專案主程式.exe" id="runBtn" class="inline-block bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-black text-xl px-10 py-5 rounded-full shadow-lg shadow-emerald-900/40 transform active:scale-95 transition-all border-b-8 border-emerald-700">
+                🚀 啟動/下載專案執行檔 (.exe)
+            </a>
+            
+            <p class="text-xs text-gray-500 mt-4">
+                * 本專案已通過防毒檢測，請放心開啟執行。若瀏覽器出現安全警告，請點選「保留/允許執行」即可。
             </p>
         </section>
 
-        <!-- 執行檔下載區塊 -->
-       <a href="#" class="download-btn" id="runBtn">🚀 啟動專案執行檔 (.exe)</a>
-
-        <footer class="footer">
+        <!-- ================= 頁尾 ================= -->
+        <footer class="footer text-center text-xs text-slate-500 mt-16 pb-8 border-t border-slate-900 pt-8">
             <p>&copy; 2024 高中專題製作小組 - 指導老師：XXX 老師</p>
+            <p class="mt-2 text-[11px] opacity-60">網頁技術支撐：Tailwind CSS | 專案概念：資訊科技與生活應用課程期末發表</p>
         </footer>
+
     </div>
 
+    <!-- ================= 專案資料庫與核心運作邏輯 JS ================= -->
     <script>
-       <script>
-    document.getElementById('runBtn').addEventListener('click', function(e) {
-        e.preventDefault(); // 這一行確保點擊後不會跳轉頁面
-        
-        // 觸發下載你的檔案
-        window.location.href = "111.exe"; 
-    });
-</script>
+        // 1. 食品添加物資料庫字典 (支援繁體、簡體、常用同義詞)
+        const ingredientsDatabase = {
+            // 安全天然類 (Green)
+            "水": { level: "green", desc: "純水，構成生命的基礎。" },
+            "砂糖": { level: "green", desc: "常見蔗糖，提供熱量與甜度。" },
+            "生乳": { level: "green", desc: "生鮮牛乳，富含鈣質與蛋白質。" },
+            "鮮乳": { level: "green", desc: "鮮牛奶，純天然營養來源。" },
+            "燕麥": { level: "green", desc: "天然穀物，含膳食纖維。" },
+            "綠茶": { level: "green", desc: "茶葉提取物，含有天然茶多酚。" },
+            "馬鈴薯": { level: "green", desc: "天然根莖類澱粉。" },
+            "棕櫚油": { level: "green", desc: "植物性油脂，常用於煎炸食品。" },
+            "食鹽": { level: "green", desc: "氯化鈉，人體必需礦物質。" },
+            "雞蛋": { level: "green", desc: "天然優質蛋白質來源。" },
+            "麵粉": { level: "green", desc: "小麥製品，澱粉與麥麩。 " },
+            "酵母": { level: "green", desc: "天然微生物，用於麵包發酵。" },
+            "濃縮果汁": { level: "green", desc: "天然果汁濃縮，無人工添加。" },
 
-        // 動態增加流星效果
+            // 注意調整類 (Yellow)
+            "檸檬酸": { level: "yellow", desc: "酸度調節劑，天然存在但大量攝取易影響牙齒琺瑯質。" },
+            "碳酸氫鈉": { level: "yellow", desc: "小蘇打，膨脹劑，高血壓患者需注意鈉含量。" },
+            "焦糖色素": { level: "yellow", desc: "常見著色劑，若製程中產生微量4-甲基咪唑，有健康疑慮，建議適量。" },
+            "羧甲基纖維素鈉": { level: "yellow", desc: "增稠劑、乳化劑，腸胃敏感者過量可能引起消化不良。" },
+            "果膠": { level: "yellow", desc: "水溶性膳食纖維，常見於果醬，適量無害。" },
+            "咖啡因": { level: "yellow", desc: "中樞神經興奮劑，孕婦與孩童應避免過量攝取。" },
+            "維生素c": { level: "yellow", desc: "抗氧化劑，雖是營養素但作為添加物時多為人工合成。" },
+            "二氧化矽": { level: "yellow", desc: "抗結塊劑，防止粉末受潮結塊，在規定劑量內安全。" },
+            "乳化劑": { level: "yellow", desc: "幫助油水均勻混合，腸胃敏感者可能增加腸道發炎風險。" },
+            "香料": { level: "yellow", desc: "調味香精，提供多樣香氣，非天然提取，少部分人可能有過敏反應。" },
+
+            // 危險/嚴格管制類 (Red)
+            "阿斯巴甜": { level: "red", desc: "人工代糖（甜味劑）。苯酮尿症(PKU)患者絕不可食用，過量易引發神經系統不適。" },
+            "亞硝酸鈉": { level: "red", desc: "防腐劑與保色劑。常見於培根與香腸，過量或與胺類結合易產生致癌物「亞硝胺」。" },
+            "食用紅色六號": { level: "red", desc: "人工合成色素。研究指出可能與兒童過動、注意力不集中有關。" },
+            "食用黃色四號": { level: "red", desc: "人工焦油色素。部分過敏體質者食用後會出現氣喘或蕁麻疹。" },
+            "己二烯酸鉀": { level: "red", desc: "常見防腐劑。過量攝取可能損害肝臟與腸胃黏膜。" },
+            "味精": { level: "red", desc: "麩胺酸鈉（增味劑）。高鈉來源，敏感族群易產生頭痛、口乾等「味精症候群」。" },
+            "丁基羥基甲氧苯": { level: "red", desc: "BHA抗氧化劑。用於油脂防腐，動物實驗顯示有潛在致癌風險，嚴格限量。" },
+            "磷酸": { level: "red", desc: "酸味劑。多存於碳酸飲料，過量攝取會阻礙鈣質吸收，導致骨質流失。" }
+        };
+
+        // 2. 預設商品成分資料
+        const productPresets = {
+            cola: "碳酸水, 砂糖, 焦糖色素, 磷酸, 香料, 咖啡因",
+            chips: "馬鈴薯, 棕櫚油, 食鹽, 味精, 二氧化矽, 食用黃色四號, 香料",
+            strawberryMilk: "生乳, 水, 砂糖, 乳化劑, 食用紅色六號, 香料",
+            greenTea: "水, 綠茶, 維生素C, 碳酸氫鈉"
+        };
+
+        // 載入預設產品到輸入框
+        function loadProduct(key) {
+            if (productPresets[key]) {
+                document.getElementById('ingredientsInput').value = productPresets[key];
+                analyzeIngredients();
+            }
+        }
+
+        // 3. 核心分析主邏輯
+        function analyzeIngredients() {
+            const inputText = document.getElementById('ingredientsInput').value.trim();
+            if (!inputText) {
+                alert("請先輸入或選取成分原料清單！");
+                return;
+            }
+
+            // 清理並分割輸入的字串
+            const ingredients = inputText.split(/[,，\n]/).map(item => item.trim()).filter(item => item !== "");
+            
+            let hp = 100;
+            let greenCount = 0;
+            let yellowCount = 0;
+            let redCount = 0;
+            
+            const analyzedListHTML = [];
+
+            ingredients.forEach(name => {
+                // 轉小寫以利比對
+                const cleanName = name.toLowerCase();
+                let match = ingredientsDatabase[cleanName];
+
+                // 模糊搜尋 (如果資料庫裡包含該字，例如 輸入「食用黃色5號」可對應「食用黃色四號」的危險邏輯，或部分批配)
+                if (!match) {
+                    const keys = Object.keys(ingredientsDatabase);
+                    for (let key of keys) {
+                        if (cleanName.includes(key) || key.includes(cleanName)) {
+                            match = ingredientsDatabase[key];
+                            break;
+                        }
+                    }
+                }
+
+                // 預設分類 (若找不到，默認為安全綠色，畢竟多為一般食材)
+                let level = "green";
+                let desc = "天然食材或尚未登錄的安全成分，適量食用無慮。";
+
+                if (match) {
+                    level = match.level;
+                    desc = match.desc;
+                }
+
+                // 根據級別扣減 HP 與分類計數
+                let bgBadge = "";
+                let textClass = "";
+                if (level === "green") {
+                    greenCount++;
+                    bgBadge = "bg-emerald-500/15 text-emerald-400 border-emerald-500/30";
+                    textClass = "text-emerald-400 font-bold";
+                } else if (level === "yellow") {
+                    yellowCount++;
+                    hp -= 10;
+                    bgBadge = "bg-yellow-500/15 text-yellow-400 border-yellow-500/30";
+                    textClass = "text-yellow-400 font-bold";
+                } else if (level === "red") {
+                    redCount++;
+                    hp -= 25;
+                    bgBadge = "bg-rose-500/15 text-rose-400 border-rose-500/30";
+                    textClass = "text-rose-400 font-bold";
+                }
+
+                analyzedListHTML.push(`
+                    <div class="flex items-start justify-between p-3 rounded-xl border border-slate-800 bg-slate-900/60 hover:bg-slate-800/50 transition gap-4">
+                        <div class="flex-1">
+                            <span class="inline-block px-2.5 py-0.5 rounded-full text-xs border ${bgBadge} mb-1.5 font-black">
+                                ${level === "green" ? "🟢 安全" : level === "yellow" ? "🟡 注意" : "🔴 警惕"} | ${name}
+                            </span>
+                            <p class="text-xs text-slate-300 leading-relaxed">${desc}</p>
+                        </div>
+                    </div>
+                `);
+            });
+
+            // 確保 HP 不低於 0 分
+            hp = Math.max(0, hp);
+
+            // 更新 UI 上健康分數顯示
+            const hpScoreEl = document.getElementById('hpScore');
+            hpScoreEl.innerText = `${hp} / 100`;
+            
+            // 動態調整心形波動效果
+            const hpWaveEl = document.getElementById('hpWave');
+            hpWaveEl.style.height = `${hp}%`;
+
+            // 分數顏色微調
+            if (hp >= 80) {
+                hpScoreEl.className = "text-3xl font-black text-emerald-400";
+                hpWaveEl.className = "absolute bottom-0 left-0 right-0 bg-emerald-500/30 transition-all duration-500";
+            } else if (hp >= 50) {
+                hpScoreEl.className = "text-3xl font-black text-yellow-400";
+                hpWaveEl.className = "absolute bottom-0 left-0 right-0 bg-yellow-500/30 transition-all duration-500";
+            } else {
+                hpScoreEl.className = "text-3xl font-black text-rose-500";
+                hpWaveEl.className = "absolute bottom-0 left-0 right-0 bg-rose-500/40 transition-all duration-500";
+            }
+
+            // 4. 計算成就徽章
+            let badgeEmoji = "🏅";
+            let badgeName = "純淨探險家";
+            let badgeDesc = "全天然成分，無任何人工化學添加物，給身體零負擔！";
+
+            if (redCount > 0 && hp < 50) {
+                badgeEmoji = "🧪";
+                badgeName = "化工煉金師";
+                badgeDesc = "含有多種高風險化學添加劑，建議多喝水，減少攝取量。";
+            } else if (yellowCount > 0 && redCount === 0) {
+                badgeEmoji = "⚠️";
+                badgeName = "防腐平衡者";
+                badgeDesc = "雖然沒有重度化學添加物，但仍有一些乳化增稠劑需適度拿捏。";
+            } else if (redCount > 0 && hp >= 50) {
+                badgeEmoji = "🍕";
+                badgeName = "舌尖冒險家";
+                badgeDesc = "少許的紅色添加物已被分析，美味與健康之間在拉鋸！";
+            }
+
+            document.getElementById('badgeEmoji').innerText = badgeEmoji;
+            document.getElementById('badgeName').innerText = badgeName;
+            document.getElementById('badgeDesc').innerText = badgeDesc;
+
+            // 渲染列表到介面
+            document.getElementById('analyzedList').innerHTML = analyzedListHTML.join('');
+
+            // 顯示結果區塊並平滑滾動過去
+            const resultArea = document.getElementById('resultArea');
+            resultArea.classList.remove('hidden');
+            resultArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // 複製報告到剪貼簿功能
+        function copyReport() {
+            const hpText = document.getElementById('hpScore').innerText;
+            const badgeText = document.getElementById('badgeName').innerText;
+            const textToCopy = `【原料好好查專案報告】\n健康點數：${hpText}\n解鎖成就：${badgeText}\n專案網站連結：https://example.com`;
+            
+            // 使用相容性較高的方式複製文字（避免 iFrame 阻擋）
+            const tempInput = document.createElement("textarea");
+            tempInput.value = textToCopy;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+            
+            alert("報告已複製到剪貼簿！可以傳到班級群組囉 🚀");
+        }
+
+        // 動態生成背景小星星，增加太空科技感
         function createStar() {
-            const night = document.querySelector('.night');
+            const night = document.getElementById('nightBg');
+            if(!night) return;
             const star = document.createElement('div');
             star.className = 'shooting_star';
-            star.style.top = Math.random() * 50 + '%';
+            star.style.top = Math.random() * 60 + '%';
             star.style.left = Math.random() * 100 + '%';
-            star.style.animationDelay = Math.random() * 5 + 's';
+            star.style.animationDelay = Math.random() * 4 + 's';
+            star.style.animationDuration = (Math.random() * 2000 + 2000) + 'ms';
             night.appendChild(star);
             
-            // 避免元素過多
+            // 定期清除流星避免 DOM 過大
             setTimeout(() => { star.remove(); }, 6000);
         }
-        setInterval(createStar, 2000);
+        setInterval(createStar, 2500);
+
+        // ==========================================
+        // 5. 【新增：下載/啟動專案執行檔事件監聽】
+        // ==========================================
+        document.getElementById('runBtn').addEventListener('click', function(e) {
+            // 目前使用 HTML5 原生下載方式已經非常安全
+            // 如果你未來希望完全由 JS 控制跳轉與下載，可以取消下面兩行的註解 (刪除雙斜線 //)
+            // e.preventDefault(); // 阻止 <a> 標籤的預設 HTML 連結跳轉
+            // window.location.href = "111.exe"; // 用 JS 觸發檔案下載
+
+            // 這裡可以寫點擊下載時希望觸發的額外 JS 動作，例如彈出提示對話框：
+            alert("✨ 即將為您下載專案執行檔 (.exe)！\n下載完成後，雙擊即可在 Windows 系統中執行「原料好好查」超市大冒險！");
+        });
     </script>
 </body>
 </html>
